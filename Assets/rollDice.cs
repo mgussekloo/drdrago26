@@ -54,14 +54,18 @@ public class rollDice : MonoBehaviour {
 		loadGameLook.GetComponent<gameLookFunc>().setThrownDices(tmpRollesDiceLeft);
 
         loadGameLook.GetComponent<gameLookFunc>().playerObject.GetComponent<playerMove>().rolledDiceStepsLeft = tmpRollesDiceLeft;
+        loadGameLook.transform.GetChild(5).GetComponent<Button>().interactable = true;
         if (loadGameLook.GetComponent<gameLookFunc>().playerObject.GetComponent<playerMove>().playerIsAI == 0) { 
-            transform.GetComponent<Button>().interactable = true; 
+            transform.GetComponent<Button>().interactable = true;
         }
         else
         {
             yield return new WaitForSeconds(1.0f);
             this.gameObject.SetActive(false);
-            loadGameLook.GetComponent<gameLookFunc>().playerObject.GetComponent<playerMove>().moveTheAIPlayerNow();
+            playerMove aiPlayerMove = loadGameLook.GetComponent<gameLookFunc>().playerObject.GetComponent<playerMove>();
+            aiPlayerMove.tmpPathWalked.Clear();
+            aiPlayerMove.tmpPathWalked.Add(aiPlayerMove.startPoint);
+            aiPlayerMove.moveTheAIPlayerNow();
 
         }
     }

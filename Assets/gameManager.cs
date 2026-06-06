@@ -239,6 +239,7 @@ public class gameManager : MonoBehaviour {
 		showPlayerMoney(listActivePlayers[activatedNumberPlayer].GetComponent<playerMove>().playerID);
 		loadGameLook.GetComponent<gameLookFunc>().playerObject = listActivePlayers[activatedNumberPlayer];
 		loadGameLook.GetComponent<gameLookFunc>().playerObject.transform.GetComponent<playerMove>().loadPlayerCards();	
+        loadGameLook.transform.GetChild(5).GetComponent<Button>().interactable = false;
 		Camera.main.GetComponent<camMovement>().activePlayer = listActivePlayers[activatedNumberPlayer];
 
         ////////////////if PC dan AI functionaliteit bouwen hier. 

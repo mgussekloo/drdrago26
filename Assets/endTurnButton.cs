@@ -25,6 +25,7 @@ public class endTurnButton : MonoBehaviour {
 
         playerObject = this.transform.parent.GetComponent<gameLookFunc>().playerObject;
         this.gameObject.SetActive(false);
+        this.transform.parent.GetChild(5).GetComponent<Button>().interactable = false;
         playerObject.GetComponent<playerMove>().tmpPathWalked.Clear();
         //	Debug.Log("add startpoint" + playerObject.GetComponent<playerMove>().startPoint);
         playerObject.GetComponent<playerMove>().tmpPathWalked.Add(playerObject.GetComponent<playerMove>().startPoint);

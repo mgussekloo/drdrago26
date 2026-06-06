@@ -131,126 +131,121 @@ public class playerMove : MonoBehaviour {
 
     public void moveTheAIPlayerNow()
     {
-
-        List<GameObject> tmpPath = this.GetComponent<pathFinding>().correctPathToFind(startPoint, goalPoint);
-        currentDistanceAI = tmpPath.Count -1;
-        tmpPath.Clear();
-        bool aiMoved = false;
-       
-        for (int i = 0; i < 4; i++)
+        if (tmpPathWalked.Count == 0)
         {
-           
-        if (startPoint.GetComponent<connectedLinks>().leftNeighbour != null && i < 1)
-            {
-               // Debug.Log("go left = " + startPoint.GetComponent<connectedLinks>().leftNeighbour.name + "goalpoint " +goalPoint.name);
-                if (checkIfPathIsShorter(startPoint.GetComponent<connectedLinks>().leftNeighbour))
-                {
-                 //   Debug.Log("go left = " + i);
-
-                    targetPoint = startPoint.GetComponent<connectedLinks>().leftNeighbour;
-                    rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
-                    moveLeft();
-                    aiMoved = true;
-                    this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                    break;
-                }
-                else
-                {
-                   
-                    this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                    continue;
-
-                }
-            }
-         else if (startPoint.GetComponent<connectedLinks>().rightNeighbour != null && i < 2)
-         {
-              
-                    if (checkIfPathIsShorter(startPoint.GetComponent<connectedLinks>().rightNeighbour))
-                    {
-                        targetPoint = startPoint.GetComponent<connectedLinks>().rightNeighbour;
-                        rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
-                        moveRight();
-                    aiMoved = true;
-                    this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                    break;
-                    }
-                    else
-                    {
-                        this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                        continue;
-                    }
-                }
-                else if (startPoint.GetComponent<connectedLinks>().upNeighbour != null && i < 3)
-                {
-                    if (checkIfPathIsShorter(startPoint.GetComponent<connectedLinks>().upNeighbour))
-                    {
-                        targetPoint = startPoint.GetComponent<connectedLinks>().upNeighbour;
-                        rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
-                        moveUp();
-                    aiMoved = true;
-                    this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                    break;
-                    }
-                    else
-                    {
-                        this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                        continue;
-                    }
-                }
-                else if (startPoint.GetComponent<connectedLinks>().downNeighbour != null && i <=4)
-                {
-                    if (checkIfPathIsShorter(startPoint.GetComponent<connectedLinks>().downNeighbour))
-                    {
-                        targetPoint = startPoint.GetComponent<connectedLinks>().downNeighbour;
-                        rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
-                        moveDown();
-                        aiMoved = true;
-                        this.GetComponent<pathFinding>().clearAllPathFindingInfo();
-                        break;
-                     }
-                }
+            tmpPathWalked.Add(startPoint);
         }
 
-        if (!aiMoved)
+        GameObject bestNeighbour = getBestAINeighbour(false);
+
+        if (bestNeighbour == null)
         {
-            moveAIToFallbackNeighbour();
+            bestNeighbour = getBestAINeighbour(true);
+        }
+
+        if (bestNeighbour != null)
+        {
+            targetPoint = bestNeighbour;
+            applyAIMovementCost();
+            moveAIToTargetPoint();
         }
     }
 
-    private bool moveAIToFallbackNeighbour()
+    private GameObject getBestAINeighbour(bool allowImmediateReturn)
     {
         connectedLinks links = startPoint.GetComponent<connectedLinks>();
+        GameObject bestNeighbour = null;
+        int bestDistance = 9999;
 
-        if (links.leftNeighbour != null)
+        bestNeighbour = getBetterAINeighbour(bestNeighbour, links.leftNeighbour, ref bestDistance, allowImmediateReturn);
+        bestNeighbour = getBetterAINeighbour(bestNeighbour, links.rightNeighbour, ref bestDistance, allowImmediateReturn);
+        bestNeighbour = getBetterAINeighbour(bestNeighbour, links.upNeighbour, ref bestDistance, allowImmediateReturn);
+        bestNeighbour = getBetterAINeighbour(bestNeighbour, links.downNeighbour, ref bestDistance, allowImmediateReturn);
+
+        return bestNeighbour;
+    }
+
+    private GameObject getBetterAINeighbour(GameObject currentBest, GameObject neighbour, ref int bestDistance, bool allowImmediateReturn)
+    {
+        if (neighbour == null)
         {
-            targetPoint = links.leftNeighbour;
+            return currentBest;
+        }
+
+        if (!allowImmediateReturn && isReturningToPreviousTile(neighbour))
+        {
+            return currentBest;
+        }
+
+        int neighbourDistance = getDistanceToGoal(neighbour);
+        if (currentBest == null || neighbourDistance < bestDistance)
+        {
+            bestDistance = neighbourDistance;
+            return neighbour;
+        }
+
+        return currentBest;
+    }
+
+    private int getDistanceToGoal(GameObject point)
+    {
+        List<GameObject> tmpPath = this.GetComponent<pathFinding>().correctPathToFind(point, goalPoint);
+        int distance = tmpPath.Count - 1;
+        tmpPath.Clear();
+        this.GetComponent<pathFinding>().clearAllPathFindingInfo();
+
+        if (distance < 0)
+        {
+            return 9999;
+        }
+
+        return distance;
+    }
+
+    private bool isReturningToPreviousTile(GameObject point)
+    {
+        return tmpPathWalked.Count > 0 && point == tmpPathWalked[tmpPathWalked.Count - 1];
+    }
+
+    private void applyAIMovementCost()
+    {
+        if (isReturningToPreviousTile(targetPoint))
+        {
+            rolledDiceStepsLeft = rolledDiceStepsLeft + 1;
+            tmpPathWalked.Remove(tmpPathWalked[tmpPathWalked.Count - 1]);
+        }
+        else if (rolledDiceStepsLeft > 0)
+        {
             rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
+            tmpPathWalked.Add(startPoint);
+        }
+    }
+
+    private void moveAIToTargetPoint()
+    {
+        connectedLinks links = startPoint.GetComponent<connectedLinks>();
+        playerIsMoving = true;
+
+        if (targetPoint == links.leftNeighbour)
+        {
             moveLeft();
-            return true;
         }
-        else if (links.rightNeighbour != null)
+        else if (targetPoint == links.rightNeighbour)
         {
-            targetPoint = links.rightNeighbour;
-            rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
             moveRight();
-            return true;
         }
-        else if (links.upNeighbour != null)
+        else if (targetPoint == links.upNeighbour)
         {
-            targetPoint = links.upNeighbour;
-            rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
             moveUp();
-            return true;
         }
-        else if (links.downNeighbour != null)
+        else if (targetPoint == links.downNeighbour)
         {
-            targetPoint = links.downNeighbour;
-            rolledDiceStepsLeft = rolledDiceStepsLeft - 1;
             moveDown();
-            return true;
         }
-
-        return false;
+        else
+        {
+            playerIsMoving = false;
+        }
     }
 
     public bool checkIfPathIsShorter(GameObject targetPointAI){
