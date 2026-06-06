@@ -1,0 +1,99 @@
+TODO
+
+single player mode:
+Version 1.0
+----------------------------------------------------------
+- cards working actions
+	- account ballance 
+	- airBalloon 
+	- bagGold
+	- block cards
+	- christmas
+	- clearnails
+	- conference
+	- creditCard
+	- debts
+	- double card
+	- earthquake
+	- fallingMoney
+	- flight
+	- gamble
+	- insurance
+	- move1
+	- move2
+	- move3
+	- move4
+	- move5
+	- move6
+	- nails
+	- nessie
+	- noSteering
+	- oneTwo
+	- pileOfMoney
+	- platinumDollar
+	- punchCar
+	- purchaseEstate
+	- pushOffDrDrago
+	- rentForward
+	- sleep
+	- slot2
+	- slot3
+	- slot4
+	- slot5
+	- snowPloug
+	- sugar
+	- takeRent
+	- taxes
+	- zero
+
+	- able to sell cards 
+- AI grey end point
+- AI mission end point
+- AI rolled dice to mission end point is larger
+- AI use random card with action
+- after one month overview about the progress
+	- how much profit 
+	- how much lost
+	- how much current value
+- when end goal has been reached
+	- give winning player amount finished first at goal. 
+	- when player has finished 3 times as first won the game and fame!!!
+- dr drago
+	- dr drago is following a person
+	- dr drago is steeling money of player
+	- dr drago is randomly linked to a player 
+
+Version 1.5
+-----------------------------------------------------------------------
+- create prototype city with real estate in te DB
+- create prototype world for testing
+- fill every city with realestate in the DB
+- create all endpoints on map
+- create whole world
+
+
+version 2.0
+------------------------
+- manualy change name of character
+- multi player mode
+- gamecenter achievements
+
+
+DONE LIST
+
+- able to buy cards  ------done
+	- get random cards yellow endpoint ---------done
+- every turn is a day of a month------------ done
+- better GUI when player is flying or driving in car depending on where he goes to or ends. ------------------done
+- pathfinding to goal --------------done
+- define random mission goal -------------------done
+- AI included per turn -------------------------- done
+- load started game ----------------------- done
+- start new game --------------------- done
+- when end goal has been reached
+	- define new end goal ----------------done
+	- give winning player 100.000 -------------- done
+- AI blue end point-------------------done
+- AI red end point------------------done
+- AI yellow end point -------------done
+- AI purple end point-------------done
